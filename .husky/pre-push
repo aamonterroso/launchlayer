@@ -2,4 +2,5 @@
 . "$(dirname "$0")/_/husky.sh"
 
 corepack enable > /dev/null 2>&1
-pnpm exec lint-staged
+pnpm typecheck
+pnpm test

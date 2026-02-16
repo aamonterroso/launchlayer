@@ -13,7 +13,7 @@ vi.mock('next/link', () => ({
 }));
 
 vi.mock('next/navigation', () => ({
-  useParams: () => ({ workspaceId: 'test-workspace' }),
+  usePathname: () => '/app',
 }));
 
 describe('Sidebar', () => {
@@ -26,10 +26,49 @@ describe('Sidebar', () => {
     expect(screen.getByText('Settings')).toBeInTheDocument();
   });
 
-  it('renders the workspace name', async () => {
+  it('renders the app name', async () => {
     await act(async () => {
       render(<Sidebar />);
     });
-    expect(screen.getByText('test-workspace')).toBeInTheDocument();
+    expect(screen.getByText('LaunchLayer')).toBeInTheDocument();
+  });
+
+  it('generates correct link hrefs', async () => {
+    await act(async () => {
+      render(<Sidebar />);
+    });
+    expect(screen.getByText('Dashboard').closest('a')).toHaveAttribute(
+      'href',
+      '/app',
+    );
+    expect(screen.getByText('Members').closest('a')).toHaveAttribute(
+      'href',
+      '/app/members',
+    );
+    expect(screen.getByText('Settings').closest('a')).toHaveAttribute(
+      'href',
+      '/app/settings',
+    );
+  });
+
+  it('applies active styling to the current route', async () => {
+    await act(async () => {
+      render(<Sidebar />);
+    });
+    const dashboardLink = screen.getByText('Dashboard').closest('a');
+    expect(dashboardLink?.className).toContain('bg-primary/10');
+    expect(dashboardLink?.className).toContain('font-semibold');
+
+    const membersLink = screen.getByText('Members').closest('a');
+    expect(membersLink?.className).toContain('text-muted-foreground');
+  });
+
+  it('adds title attributes for accessibility', async () => {
+    await act(async () => {
+      render(<Sidebar />);
+    });
+    expect(screen.getByTitle('Dashboard')).toBeInTheDocument();
+    expect(screen.getByTitle('Members')).toBeInTheDocument();
+    expect(screen.getByTitle('Settings')).toBeInTheDocument();
   });
 });

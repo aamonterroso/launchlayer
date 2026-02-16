@@ -16,14 +16,29 @@ vi.mock('next/navigation', () => ({
   usePathname: () => '/app',
 }));
 
+vi.mock('lucide-react', () => ({
+  LayoutDashboard: (props: React.SVGProps<SVGSVGElement>) => (
+    <svg data-testid="icon-dashboard" {...props} />
+  ),
+  Users: (props: React.SVGProps<SVGSVGElement>) => (
+    <svg data-testid="icon-members" {...props} />
+  ),
+  Settings: (props: React.SVGProps<SVGSVGElement>) => (
+    <svg data-testid="icon-settings" {...props} />
+  ),
+}));
+
 describe('Sidebar', () => {
-  it('renders navigation items', async () => {
+  it('renders navigation items with icons', async () => {
     await act(async () => {
       render(<Sidebar />);
     });
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
     expect(screen.getByText('Members')).toBeInTheDocument();
     expect(screen.getByText('Settings')).toBeInTheDocument();
+    expect(screen.getByTestId('icon-dashboard')).toBeInTheDocument();
+    expect(screen.getByTestId('icon-members')).toBeInTheDocument();
+    expect(screen.getByTestId('icon-settings')).toBeInTheDocument();
   });
 
   it('renders the app name', async () => {
@@ -56,7 +71,7 @@ describe('Sidebar', () => {
       render(<Sidebar />);
     });
     const dashboardLink = screen.getByText('Dashboard').closest('a');
-    expect(dashboardLink?.className).toContain('bg-primary/10');
+    expect(dashboardLink?.className).toContain('bg-primary/15');
     expect(dashboardLink?.className).toContain('font-semibold');
 
     const membersLink = screen.getByText('Members').closest('a');

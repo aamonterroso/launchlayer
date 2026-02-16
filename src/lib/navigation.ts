@@ -1,7 +1,9 @@
+import { LayoutDashboard, Settings, Users } from 'lucide-react';
+
 export const appNavItems = [
-  { label: 'Dashboard', href: '/app' },
-  { label: 'Members', href: '/app/members' },
-  { label: 'Settings', href: '/app/settings' },
+  { label: 'Dashboard', href: '/app', icon: LayoutDashboard },
+  { label: 'Members', href: '/app/members', icon: Users },
+  { label: 'Settings', href: '/app/settings', icon: Settings },
 ] as const;
 
 export const routeTitles: Record<string, string> = Object.fromEntries(

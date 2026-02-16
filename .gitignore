@@ -64,4 +64,5 @@ yarn-error.log*
 # Tooling
 # ================================
 .claude/
+CLAUDE.*
 

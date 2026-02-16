@@ -1,15 +1,21 @@
 import { z } from 'zod';
 
-const envSchema = z.object({
-  NODE_ENV: z
-    .enum(['development', 'test', 'production'])
-    .default('development'),
-  NEXT_PUBLIC_APP_URL: z.string().url(),
+const baseSchema = z.object({
+  APP_ENV: z
+    .enum(['local', 'development', 'staging', 'production'])
+    .default('local'),
+  NEXT_PUBLIC_APP_URL: z.string().url().optional(),
 });
 
-export const env = envSchema.parse({
-  NODE_ENV: process.env.NODE_ENV,
+const parsed = baseSchema.parse({
+  APP_ENV: process.env.APP_ENV ?? process.env.NEXT_PUBLIC_APP_ENV,
   NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
 });
 
-export type Env = z.infer<typeof envSchema>;
+// Require URL in production-like environments
+if (parsed.APP_ENV === 'production' && !parsed.NEXT_PUBLIC_APP_URL) {
+  throw new Error('NEXT_PUBLIC_APP_URL is required when APP_ENV=production');
+}
+
+export const env = parsed;
+export type Env = z.infer<typeof baseSchema>;

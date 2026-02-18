@@ -1,8 +1,9 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { setSession } from './session';
+import { getSession, setSession, updateSession } from './session';
 import type { DemoSession } from './session';
 
 // ---------- Validation ----------
@@ -30,14 +31,11 @@ const DEMO_SESSION: DemoSession = {
     name: 'Demo User',
     email: 'demo@launchlayer.dev',
   },
-  workspace: {
-    id: 'ws_01',
-    name: 'Acme Corp',
-    slug: 'acme-corp',
-  },
+  workspaceId: 'ws_01',
   workspaces: [
     { id: 'ws_01', name: 'Acme Corp', slug: 'acme-corp' },
     { id: 'ws_02', name: 'Side Project', slug: 'side-project' },
+    { id: 'ws_03', name: 'Open Source', slug: 'open-source' },
   ],
 };
 
@@ -70,4 +68,33 @@ export async function loginAction(
 
   await setSession(DEMO_SESSION);
   redirect('/app');
+}
+
+// ---------- Switch workspace ----------
+
+const switchWorkspaceSchema = z.object({
+  workspaceId: z.string().min(1, 'Workspace ID is required'),
+});
+
+export interface SwitchWorkspaceResult {
+  error?: string;
+}
+
+export async function switchWorkspace(
+  workspaceId: string,
+): Promise<SwitchWorkspaceResult> {
+  const parsed = switchWorkspaceSchema.safeParse({ workspaceId });
+  if (!parsed.success) return { error: 'Invalid workspace ID' };
+
+  const session = await getSession();
+  if (!session) return { error: 'Not authenticated' };
+
+  const exists = session.workspaces.some(
+    (ws) => ws.id === parsed.data.workspaceId,
+  );
+  if (!exists) return { error: 'Workspace not found' };
+  await updateSession({ workspaceId: parsed.data.workspaceId });
+  // revalidatePath busts RSC cache; router.refresh() (client-side) triggers re-fetch
+  revalidatePath('/app', 'layout');
+  return {};
 }

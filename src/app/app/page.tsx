@@ -5,8 +5,23 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { getSession } from '@/lib/auth/session';
+import { metricsByWorkspaceId } from '@/lib/demo/workspace-data';
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const session = await getSession();
+  const workspaceId = session?.workspaceId ?? 'default';
+  // noUncheckedIndexedAccess: assert .default exists since we own the data
+  const metrics =
+    metricsByWorkspaceId[workspaceId] ?? metricsByWorkspaceId.default!;
+
+  const stats = [
+    { title: 'Total Members', value: String(metrics.members), change: '+2 this month' },
+    { title: 'Active Projects', value: String(metrics.projects), change: '+1 this week' },
+    { title: 'Tasks Completed', value: String(metrics.tasks), change: '+12 today' },
+    { title: 'Uptime', value: `${metrics.uptime}%`, change: 'Last 30 days' },
+  ];
+
   return (
     <div className="space-y-6">
       <div>
@@ -29,10 +44,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-const stats = [
-  { title: 'Total Members', value: '12', change: '+2 this month' },
-  { title: 'Active Projects', value: '4', change: '+1 this week' },
-  { title: 'Tasks Completed', value: '89', change: '+12 today' },
-  { title: 'Uptime', value: '99.9%', change: 'Last 30 days' },
-];

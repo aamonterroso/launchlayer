@@ -1,7 +1,8 @@
 'use client';
 
+import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import { Check, ChevronsUpDown, Loader2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,11 +27,22 @@ export function WorkspaceSwitcher({
   collapsed,
 }: WorkspaceSwitcherProps) {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
-  async function handleSwitch(id: string) {
-    if (id === activeWorkspace?.id) return;
-    await switchWorkspace(id);
+  async function doSwitch(id: string) {
+    const result = await switchWorkspace(id);
+    if (result.error) {
+      console.error('[WorkspaceSwitcher] switch failed:', result.error);
+      return;
+    }
     router.refresh();
+  }
+
+  function handleSwitch(id: string) {
+    if (id === activeWorkspace?.id) return;
+    startTransition(() => {
+      void doSwitch(id);
+    });
   }
 
   const menuItems = (
@@ -59,12 +71,17 @@ export function WorkspaceSwitcher({
           <Button
             variant="ghost"
             size="sm"
+            disabled={isPending}
             className="bg-muted/40 hover:bg-accent h-9 w-9 justify-center rounded-md border shadow-sm"
             aria-label="Switch workspace"
           >
-            <span className="text-xs font-semibold uppercase">
-              {activeWorkspace?.name?.[0] ?? '?'}
-            </span>
+            {isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <span className="text-xs font-semibold uppercase">
+                {activeWorkspace?.name?.[0] ?? '?'}
+              </span>
+            )}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -83,13 +100,18 @@ export function WorkspaceSwitcher({
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
+          disabled={isPending}
           className="bg-muted/40 hover:bg-accent h-9 w-full justify-between rounded-md border px-3 shadow-sm"
           aria-label="Switch workspace"
         >
           <span className="truncate text-sm font-medium">
             {activeWorkspace?.name ?? 'No workspace'}
           </span>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          {isPending ? (
+            <Loader2 className="ml-2 h-4 w-4 shrink-0 animate-spin" />
+          ) : (
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-56 border shadow-md">

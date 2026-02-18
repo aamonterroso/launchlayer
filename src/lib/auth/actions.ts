@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { getSession, setSession, updateSession } from './session';
+import { sleep } from '@/lib/utils/sleep';
 import type { DemoSession } from './session';
 
 // ---------- Validation ----------
@@ -94,6 +95,9 @@ export async function switchWorkspace(
   );
   if (!exists) return { error: 'Workspace not found' };
   await updateSession({ workspaceId: parsed.data.workspaceId });
+  // Only for demo purposes: simulate a delay to show loading state in UI
+  // remove when real API calls are implemented
+  if (process.env.NODE_ENV === 'development') await sleep(600);
   // revalidatePath busts RSC cache; router.refresh() (client-side) triggers re-fetch
   revalidatePath('/app', 'layout');
   return {};

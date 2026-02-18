@@ -16,7 +16,7 @@ export interface DemoWorkspace {
 
 export interface DemoSession {
   user: DemoUser;
-  workspace: DemoWorkspace;
+  workspaceId: string;
   workspaces: DemoWorkspace[];
 }
 
@@ -55,4 +55,12 @@ export async function setSession(session: DemoSession): Promise<void> {
 export async function clearSession(): Promise<void> {
   const jar = await cookies();
   jar.delete(COOKIE_NAME);
+}
+
+export async function updateSession(
+  patch: Partial<DemoSession>,
+): Promise<void> {
+  const current = await getSession();
+  if (!current) throw new Error('No session found');
+  await setSession({ ...current, ...patch });
 }

@@ -11,8 +11,15 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { appNavItems, isActiveRoute } from '@/lib/navigation';
+import { WorkspaceSwitcher } from './workspace-switcher';
+import type { DemoWorkspace } from '@/lib/auth/session';
 
-export function Sidebar() {
+export interface SidebarProps {
+  activeWorkspace: DemoWorkspace | null;
+  workspaces: DemoWorkspace[];
+}
+
+export function Sidebar({ activeWorkspace, workspaces }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
 
@@ -23,19 +30,36 @@ export function Sidebar() {
           collapsed ? 'w-16' : 'w-64'
         }`}
       >
-        <div className="flex h-16 items-center justify-between border-b px-4">
-          {!collapsed && (
-            <span className="text-sm font-semibold">LaunchLayer</span>
-          )}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setCollapsed(!collapsed)}
-            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          >
-            {collapsed ? '→' : '←'}
-          </Button>
+        {/* Header: clean 2-row layout */}
+        <div className="border-b">
+          <div className="flex h-14 items-center justify-between px-4">
+            {!collapsed && (
+              <span className="text-sm font-semibold">LaunchLayer</span>
+            )}
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setCollapsed(!collapsed)}
+              aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              className="shrink-0"
+            >
+              {collapsed ? '→' : '←'}
+            </Button>
+          </div>
+
+          {/* Workspace row (aligned with nav padding) */}
+          <div className={`${collapsed ? 'px-2 pb-3' : 'px-4 pb-3'}`}>
+            <div className={`${collapsed ? 'flex justify-center' : ''}`}>
+              <WorkspaceSwitcher
+                activeWorkspace={activeWorkspace}
+                workspaces={workspaces}
+                collapsed={collapsed}
+              />
+            </div>
+          </div>
         </div>
+
         <nav className="flex-1 space-y-1 p-2">
           {appNavItems.map((item) => {
             const active = isActiveRoute(pathname, item.href);
@@ -71,11 +95,6 @@ export function Sidebar() {
             return link;
           })}
         </nav>
-        <div className="border-t p-4">
-          {!collapsed && (
-            <p className="text-muted-foreground text-xs">Workspace Switcher</p>
-          )}
-        </div>
       </aside>
     </TooltipProvider>
   );

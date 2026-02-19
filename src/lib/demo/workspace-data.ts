@@ -61,3 +61,46 @@ export const settingsByWorkspaceId: Record<string, WorkspaceSettings> = {
   ws_03: { plan: 'Pro', region: 'us-west-2', retentionDays: 60, themePreference: 'light' },
   default: { plan: 'Free', region: 'us-east-1', retentionDays: 7, themePreference: 'light' },
 };
+
+// ---------- Activity ----------
+
+export type ActivityVerb =
+  | 'invited'
+  | 'completed_task'
+  | 'deployed'
+  | 'updated_settings'
+  | 'joined';
+
+export interface ActivityItem {
+  id: string;
+  actor: string;
+  verb: ActivityVerb;
+  target: string;
+  timestamp: string; // ISO 8601
+}
+
+const recentActivityByWorkspaceId: Record<string, ActivityItem[]> = {
+  ws_01: [
+    { id: 'a_01', actor: 'Alice Nguyen', verb: 'invited',          target: 'frank@acme.com',       timestamp: '2026-02-18T09:14:00Z' },
+    { id: 'a_02', actor: 'Carol Smith',  verb: 'completed_task',   target: 'Auth token refresh',   timestamp: '2026-02-18T08:47:00Z' },
+    { id: 'a_03', actor: 'Bob Martinez', verb: 'deployed',         target: 'v2.4.1 → production',  timestamp: '2026-02-17T22:05:00Z' },
+    { id: 'a_04', actor: 'David Lee',    verb: 'completed_task',   target: 'DB migration script',  timestamp: '2026-02-17T16:30:00Z' },
+    { id: 'a_05', actor: 'Alice Nguyen', verb: 'updated_settings', target: 'Data retention → 90d', timestamp: '2026-02-16T11:00:00Z' },
+  ],
+  ws_02: [
+    { id: 'a_06', actor: 'Grace Park',  verb: 'invited',        target: 'iris@side.dev',     timestamp: '2026-02-18T10:00:00Z' },
+    { id: 'a_07', actor: 'Henry Brown', verb: 'completed_task', target: 'Landing page copy', timestamp: '2026-02-17T14:20:00Z' },
+    { id: 'a_08', actor: 'Grace Park',  verb: 'deployed',       target: 'v0.9.0 → staging',  timestamp: '2026-02-16T09:00:00Z' },
+  ],
+  ws_03: [
+    { id: 'a_09', actor: 'Jack Taylor',  verb: 'deployed',       target: 'v3.1.0 → production', timestamp: '2026-02-18T07:30:00Z' },
+    { id: 'a_10', actor: 'Karen White',  verb: 'completed_task', target: 'CI pipeline fix',     timestamp: '2026-02-18T06:15:00Z' },
+    { id: 'a_11', actor: 'Leo Davis',    verb: 'joined',         target: 'oss-core',            timestamp: '2026-02-17T20:00:00Z' },
+    { id: 'a_12', actor: 'Mia Johnson',  verb: 'invited',        target: 'noah@oss.dev',        timestamp: '2026-02-17T12:45:00Z' },
+  ],
+  default: [],
+};
+
+export function getRecentActivity(workspaceId: string): ActivityItem[] {
+  return recentActivityByWorkspaceId[workspaceId] ?? recentActivityByWorkspaceId.default!;
+}

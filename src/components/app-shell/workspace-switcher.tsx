@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useTransition } from 'react';
+import { useSyncExternalStore, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Check, ChevronsUpDown, Loader2 } from 'lucide-react';
 import {
@@ -15,6 +15,12 @@ import { Button } from '@/components/ui/button';
 import { switchWorkspace } from '@/lib/auth/actions';
 import type { DemoWorkspace } from '@/lib/auth/session';
 
+const noop = () => () => {};
+
+function useIsClient() {
+  return useSyncExternalStore(noop, () => true, () => false);
+}
+
 export interface WorkspaceSwitcherProps {
   activeWorkspace: DemoWorkspace | null;
   workspaces: DemoWorkspace[];
@@ -28,11 +34,7 @@ export function WorkspaceSwitcher({
 }: WorkspaceSwitcherProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const isClient = useIsClient();
 
   async function doSwitch(id: string) {
     const result = await switchWorkspace(id);
@@ -69,7 +71,7 @@ export function WorkspaceSwitcher({
     </>
   );
 
-  if (!mounted) {
+  if (!isClient) {
     if (collapsed) {
       return (
         <Button

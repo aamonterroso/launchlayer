@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+
 import {
   Card,
   CardContent,
@@ -7,6 +9,8 @@ import {
 } from '@/components/ui/card';
 import { getSession } from '@/lib/auth/session';
 import { metricsByWorkspaceId } from '@/lib/demo/workspace-data';
+import { RecentActivity } from './_components/recent-activity';
+import { RecentActivitySkeleton } from './_components/recent-activity-skeleton';
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -41,6 +45,10 @@ export default async function DashboardPage() {
           </Card>
         ))}
       </div>
+
+      <Suspense fallback={<RecentActivitySkeleton />}>
+        <RecentActivity />
+      </Suspense>
     </div>
   );
 }

@@ -100,7 +100,6 @@ export function WorkspaceSwitcher({
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          disabled={isPending}
           className="bg-muted/40 hover:bg-accent h-9 w-full justify-between rounded-md border px-3 shadow-sm"
           aria-label="Switch workspace"
         >
@@ -108,7 +107,10 @@ export function WorkspaceSwitcher({
             {activeWorkspace?.name ?? 'No workspace'}
           </span>
           {isPending ? (
-            <Loader2 className="ml-2 h-4 w-4 shrink-0 animate-spin" />
+            <span className="text-muted-foreground ml-2 flex shrink-0 items-center gap-1 text-xs">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              Updating…
+            </span>
           ) : (
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           )}

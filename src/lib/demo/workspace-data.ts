@@ -104,3 +104,45 @@ const recentActivityByWorkspaceId: Record<string, ActivityItem[]> = {
 export function getRecentActivity(workspaceId: string): ActivityItem[] {
   return recentActivityByWorkspaceId[workspaceId] ?? recentActivityByWorkspaceId.default!;
 }
+
+// ---------- Usage ----------
+
+export interface UsagePoint {
+  ts: string;    // ISO date string (YYYY-MM-DD)
+  value: number;
+}
+
+const usagePointsByWorkspaceId: Record<string, UsagePoint[]> = {
+  ws_01: [
+    { ts: '2026-02-12', value: 542 },
+    { ts: '2026-02-13', value: 618 },
+    { ts: '2026-02-14', value: 480 },
+    { ts: '2026-02-15', value: 703 },
+    { ts: '2026-02-16', value: 590 },
+    { ts: '2026-02-17', value: 812 },
+    { ts: '2026-02-18', value: 674 },
+  ],
+  ws_02: [
+    { ts: '2026-02-12', value: 87  },
+    { ts: '2026-02-13', value: 124 },
+    { ts: '2026-02-14', value: 95  },
+    { ts: '2026-02-15', value: 148 },
+    { ts: '2026-02-16', value: 132 },
+    { ts: '2026-02-17', value: 179 },
+    { ts: '2026-02-18', value: 161 },
+  ],
+  ws_03: [
+    { ts: '2026-02-12', value: 321 },
+    { ts: '2026-02-13', value: 298 },
+    { ts: '2026-02-14', value: 412 },
+    { ts: '2026-02-15', value: 375 },
+    { ts: '2026-02-16', value: 443 },
+    { ts: '2026-02-17', value: 388 },
+    { ts: '2026-02-18', value: 502 },
+  ],
+  default: [],
+};
+
+export function getUsagePoints(workspaceId: string): UsagePoint[] {
+  return usagePointsByWorkspaceId[workspaceId] ?? usagePointsByWorkspaceId.default!;
+}

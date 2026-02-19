@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { getSession } from '@/lib/auth/session';
-import { getRecentActivity } from '@/lib/demo/workspace-data';
+import { getRecentActivity } from '@/lib/dashboard/dashboard-data';
 import { sleep } from '@/lib/utils/sleep';
 
 const verbLabel: Record<string, string> = {
@@ -24,7 +24,7 @@ export async function RecentActivity() {
 
   const session = await getSession();
   const workspaceId = session?.workspaceId ?? 'default';
-  const items = getRecentActivity(workspaceId);
+  const items = await getRecentActivity(workspaceId);
 
   return (
     <Card>

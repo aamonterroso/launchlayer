@@ -1,6 +1,6 @@
 'use client';
 
-import { useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Check, ChevronsUpDown, Loader2 } from 'lucide-react';
 import {
@@ -28,6 +28,11 @@ export function WorkspaceSwitcher({
 }: WorkspaceSwitcherProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   async function doSwitch(id: string) {
     const result = await switchWorkspace(id);
@@ -63,6 +68,37 @@ export function WorkspaceSwitcher({
       ))}
     </>
   );
+
+  if (!mounted) {
+    if (collapsed) {
+      return (
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled
+          className="bg-muted/40 h-9 w-9 justify-center rounded-md border shadow-sm"
+          aria-label="Switch workspace"
+        >
+          <span className="text-xs font-semibold uppercase">
+            {activeWorkspace?.name?.[0] ?? '?'}
+          </span>
+        </Button>
+      );
+    }
+    return (
+      <Button
+        variant="ghost"
+        disabled
+        className="bg-muted/40 h-9 w-full justify-between rounded-md border px-3 shadow-sm"
+        aria-label="Switch workspace"
+      >
+        <span className="truncate text-sm font-medium">
+          {activeWorkspace?.name ?? 'No workspace'}
+        </span>
+        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+      </Button>
+    );
+  }
 
   if (collapsed) {
     return (

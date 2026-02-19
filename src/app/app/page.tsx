@@ -8,16 +8,16 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { getSession } from '@/lib/auth/session';
-import { metricsByWorkspaceId } from '@/lib/demo/workspace-data';
+import { getDashboardMetrics, normalizeDashboardRange } from '@/lib/dashboard/dashboard-data';
 import { RecentActivity } from './_components/recent-activity';
 import { RecentActivitySkeleton } from './_components/recent-activity-skeleton';
+import { UsageGraph } from './_components/usage-graph';
+import { UsageGraphSkeleton } from './_components/usage-graph-skeleton';
 
 export default async function DashboardPage() {
   const session = await getSession();
   const workspaceId = session?.workspaceId ?? 'default';
-  // noUncheckedIndexedAccess: assert .default exists since we own the data
-  const metrics =
-    metricsByWorkspaceId[workspaceId] ?? metricsByWorkspaceId.default!;
+  const metrics = await getDashboardMetrics(workspaceId, normalizeDashboardRange());
 
   const stats = [
     { title: 'Total Members', value: String(metrics.members), change: '+2 this month' },
@@ -45,6 +45,10 @@ export default async function DashboardPage() {
           </Card>
         ))}
       </div>
+
+      <Suspense fallback={<UsageGraphSkeleton />}>
+        <UsageGraph />
+      </Suspense>
 
       <Suspense fallback={<RecentActivitySkeleton />}>
         <RecentActivity />

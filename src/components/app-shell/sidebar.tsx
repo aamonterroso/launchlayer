@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import { LayoutDashboard } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -14,12 +16,20 @@ import { appNavItems, isActiveRoute } from '@/lib/navigation';
 import { WorkspaceSwitcher } from './workspace-switcher';
 import type { DemoWorkspace } from '@/lib/auth/session';
 
+type SidebarNavItem = { label: string; href: string };
+
+const iconMap = appNavItems.reduce<Record<string, LucideIcon>>(
+  (acc, n) => { acc[n.href] = n.icon; return acc; },
+  {},
+);
+
 export interface SidebarProps {
   activeWorkspace: DemoWorkspace | null;
   workspaces: DemoWorkspace[];
+  navItems: SidebarNavItem[];
 }
 
-export function Sidebar({ activeWorkspace, workspaces }: SidebarProps) {
+export function Sidebar({ activeWorkspace, workspaces, navItems }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
 
@@ -61,9 +71,9 @@ export function Sidebar({ activeWorkspace, workspaces }: SidebarProps) {
         </div>
 
         <nav className="flex-1 space-y-1 p-2">
-          {appNavItems.map((item) => {
+          {navItems.map((item) => {
             const active = isActiveRoute(pathname, item.href);
-            const Icon = item.icon;
+            const Icon = iconMap[item.href] ?? LayoutDashboard;
 
             const link = (
               <Link

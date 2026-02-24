@@ -2,6 +2,8 @@ import { getSession } from '@/lib/auth/session';
 import { PageTitle } from '@/components/app-shell/page-title';
 import { Sidebar } from '@/components/app-shell/sidebar';
 import { Topbar } from '@/components/app-shell/topbar';
+import { getAuthzContext, hasPermission } from '@/lib/rbac/authorize';
+import { appNavItems } from '@/lib/navigation';
 
 export default async function AppLayout({
   children,
@@ -9,6 +11,10 @@ export default async function AppLayout({
   children: React.ReactNode;
 }) {
   const session = await getSession();
+  const ctx = await getAuthzContext(session);
+  const allowedNavItems = appNavItems
+    .filter((item) => !item.permission || hasPermission(ctx, item.permission))
+    .map(({ label, href }) => ({ label, href }));
   const activeWorkspace =
     session?.workspaces.find((w) => w.id === session.workspaceId) ?? null;
 
@@ -17,6 +23,7 @@ export default async function AppLayout({
       <Sidebar
         activeWorkspace={activeWorkspace}
         workspaces={session?.workspaces ?? []}
+        navItems={allowedNavItems}
       />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar title={<PageTitle />} />

@@ -154,8 +154,8 @@ export function getUsagePoints(workspaceId: string): UsagePoint[] {
 
 const memberRolesByWorkspace: Record<string, Record<string, Role>> = {
   ws_01: { usr_demo_01: 'owner' },
-  ws_02: { usr_demo_01: 'owner' },
-  ws_03: { usr_demo_01: 'owner' },
+  ws_02: { usr_demo_01: 'member' },
+  ws_03: { usr_demo_01: 'viewer' },
 };
 
 export async function getWorkspaceRole(args: {

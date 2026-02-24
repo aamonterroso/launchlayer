@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/card';
 import { getSession } from '@/lib/auth/session';
 import { settingsByWorkspaceId } from '@/lib/demo/workspace-data';
+import { guardPage } from '@/lib/rbac/route-guards';
 
 function SettingRow({ label, value }: { label: string; value: string }) {
   return (
@@ -18,6 +19,7 @@ function SettingRow({ label, value }: { label: string; value: string }) {
 }
 
 export default async function SettingsPage() {
+  await guardPage('CanViewSettings');
   const session = await getSession();
   const workspaceId = session?.workspaceId ?? 'default';
   // noUncheckedIndexedAccess: assert .default exists since we own the data

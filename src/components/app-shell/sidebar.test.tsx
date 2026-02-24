@@ -47,6 +47,11 @@ const mockWorkspaces: DemoWorkspace[] = [
 const defaultProps = {
   activeWorkspace: mockWorkspaces[0]!,
   workspaces: mockWorkspaces,
+  navItems: [
+    { label: 'Dashboard', href: '/app' },
+    { label: 'Members', href: '/app/members' },
+    { label: 'Settings', href: '/app/settings' },
+  ],
 };
 
 // ---------- Tests ----------
@@ -119,7 +124,7 @@ describe('Sidebar', () => {
 
   it('renders workspace switcher with null workspace gracefully', async () => {
     await act(async () => {
-      render(<Sidebar activeWorkspace={null} workspaces={[]} />);
+      render(<Sidebar activeWorkspace={null} workspaces={[]} navItems={[]} />);
     });
     expect(screen.getByText('No workspace')).toBeInTheDocument();
   });

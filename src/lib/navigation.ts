@@ -1,10 +1,19 @@
 import { LayoutDashboard, Settings, Users } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import type { PermissionKey } from '@/lib/rbac/rbac-types';
 
-export const appNavItems = [
+export type NavItem = {
+  label: string;
+  href: string;
+  icon: LucideIcon;
+  permission?: PermissionKey;
+};
+
+export const appNavItems: NavItem[] = [
   { label: 'Dashboard', href: '/app', icon: LayoutDashboard },
-  { label: 'Members', href: '/app/members', icon: Users },
-  { label: 'Settings', href: '/app/settings', icon: Settings },
-] as const;
+  { label: 'Members', href: '/app/members', icon: Users, permission: 'CanViewMembers' },
+  { label: 'Settings', href: '/app/settings', icon: Settings, permission: 'CanViewSettings' },
+];
 
 export const routeTitles: Record<string, string> = Object.fromEntries(
   appNavItems.map((item) => [item.href, item.label]),

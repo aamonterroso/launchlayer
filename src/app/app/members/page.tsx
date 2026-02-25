@@ -7,8 +7,10 @@ import {
 } from '@/components/ui/card';
 import { getSession } from '@/lib/auth/session';
 import { membersByWorkspaceId } from '@/lib/demo/workspace-data';
+import { guardPage } from '@/lib/rbac/route-guards';
 
 export default async function MembersPage() {
+  await guardPage('CanViewMembers');
   const session = await getSession();
   const workspaceId = session?.workspaceId ?? 'default';
   // noUncheckedIndexedAccess: assert .default exists since we own the data

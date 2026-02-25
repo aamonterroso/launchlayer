@@ -1,3 +1,5 @@
+import type { Role } from '@/lib/rbac/rbac-types';
+
 // ---------- Types ----------
 
 export interface WorkspaceMetrics {
@@ -145,4 +147,20 @@ const usagePointsByWorkspaceId: Record<string, UsagePoint[]> = {
 
 export function getUsagePoints(workspaceId: string): UsagePoint[] {
   return usagePointsByWorkspaceId[workspaceId] ?? usagePointsByWorkspaceId.default!;
+}
+
+// ---------- RBAC Membership (demo-only) ----------
+// Replace bodies when real API/DB lands; keep interface stable.
+
+const memberRolesByWorkspace: Record<string, Record<string, Role>> = {
+  ws_01: { usr_demo_01: 'owner' },
+  ws_02: { usr_demo_01: 'member' },
+  ws_03: { usr_demo_01: 'viewer' },
+};
+
+export async function getWorkspaceRole(args: {
+  workspaceId: string;
+  userId: string;
+}): Promise<Role | null> {
+  return memberRolesByWorkspace[args.workspaceId]?.[args.userId] ?? null;
 }

@@ -8,27 +8,32 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { getSession } from '@/lib/auth/session';
-import {
-  getUsageSeries,
-  normalizeDashboardRange,
-} from '@/lib/dashboard/dashboard-data';
+import { getUsageSeries } from '@/lib/dashboard/dashboard-data';
+import { type TimeRange } from '@/lib/time-range/time-range';
 import { sleep } from '@/lib/utils/sleep';
 
-export async function UsageGraph() {
+export async function UsageGraph({ timeRange }: { timeRange: TimeRange }) {
   await sleep(800);
 
   const session = await getSession();
   const workspaceId = session?.workspaceId ?? 'default';
-  const range = normalizeDashboardRange();
-  const series = await getUsageSeries(workspaceId, range);
+  const series = await getUsageSeries({ workspaceId, timeRange });
   const { label, unit, points } = series;
 
   const max = Math.max(...points.map((p) => p.value), 1);
   const total = points.reduce((sum, p) => sum + p.value, 0);
   const avg = points.length > 0 ? Math.round(total / points.length) : 0;
+  const rangeLabel = (
+    {
+      '7d': 'last 7 days',
+      '30d': 'last 30 days',
+      '90d': 'last 90 days',
+    } as const
+  )[timeRange.preset];
+
   const description = unit
-    ? `${label} (${unit}) · last 7 days`
-    : `${label} · last 7 days`;
+    ? `${label} (${unit}) · ${rangeLabel}`
+    : `${label} · ${rangeLabel}`;
 
   return (
     <Card>
@@ -39,7 +44,7 @@ export async function UsageGraph() {
         </div>
         {points.length > 0 && (
           <div className="text-right">
-            <p className="text-foreground tabular-nums text-2xl font-bold leading-none">
+            <p className="text-foreground text-2xl leading-none font-bold tabular-nums">
               {avg.toLocaleString()}
             </p>
             <p className="text-muted-foreground mt-1 text-xs">avg / day</p>

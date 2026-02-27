@@ -12,6 +12,7 @@ import { getDashboardMetrics } from '@/lib/dashboard/dashboard-data';
 import { parseTimeRange, type SearchParams } from '@/lib/time-range/time-range';
 import { RecentActivity } from './_components/recent-activity';
 import { RecentActivitySkeleton } from './_components/recent-activity-skeleton';
+import { TimeRangeTabs } from './_components/time-range-tabs';
 import { UsageGraph } from './_components/usage-graph';
 import { UsageGraphSkeleton } from './_components/usage-graph-skeleton';
 
@@ -55,10 +56,15 @@ export default async function DashboardPage({
   ];
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground">Welcome to your workspace</p>
+    <div className="space-y-5">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <p className="text-muted-foreground">Welcome to your workspace</p>
+        </div>
+        <Suspense fallback={<div className="bg-muted h-9 w-[130px] animate-pulse rounded-lg" />}>
+          <TimeRangeTabs activePreset={timeRange.preset} />
+        </Suspense>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (

@@ -8,22 +8,50 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { getSession } from '@/lib/auth/session';
-import { getDashboardMetrics, normalizeDashboardRange } from '@/lib/dashboard/dashboard-data';
+import { getDashboardMetrics } from '@/lib/dashboard/dashboard-data';
+import { parseTimeRange, type SearchParams } from '@/lib/time-range/time-range';
 import { RecentActivity } from './_components/recent-activity';
 import { RecentActivitySkeleton } from './_components/recent-activity-skeleton';
 import { UsageGraph } from './_components/usage-graph';
 import { UsageGraphSkeleton } from './_components/usage-graph-skeleton';
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams?: SearchParams | Promise<SearchParams>;
+}) {
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+
   const session = await getSession();
   const workspaceId = session?.workspaceId ?? 'default';
-  const metrics = await getDashboardMetrics(workspaceId, normalizeDashboardRange());
+  const timeRange = parseTimeRange(resolvedSearchParams);
+  const metrics = await getDashboardMetrics({ workspaceId, timeRange });
+
+  const rangeLabel = (
+    {
+      '7d': 'Last 7 days',
+      '30d': 'Last 30 days',
+      '90d': 'Last 90 days',
+    } as const
+  )[timeRange.preset];
 
   const stats = [
-    { title: 'Total Members', value: String(metrics.members), change: '+2 this month' },
-    { title: 'Active Projects', value: String(metrics.projects), change: '+1 this week' },
-    { title: 'Tasks Completed', value: String(metrics.tasks), change: '+12 today' },
-    { title: 'Uptime', value: `${metrics.uptime}%`, change: 'Last 30 days' },
+    {
+      title: 'Total Members',
+      value: String(metrics.members),
+      change: '+2 this month',
+    },
+    {
+      title: 'Active Projects',
+      value: String(metrics.projects),
+      change: '+1 this week',
+    },
+    {
+      title: 'Tasks Completed',
+      value: String(metrics.tasks),
+      change: '+12 today',
+    },
+    { title: 'Uptime', value: `${metrics.uptime}%`, change: rangeLabel },
   ];
 
   return (
@@ -47,11 +75,11 @@ export default async function DashboardPage() {
       </div>
 
       <Suspense fallback={<UsageGraphSkeleton />}>
-        <UsageGraph />
+        <UsageGraph timeRange={timeRange} />
       </Suspense>
 
       <Suspense fallback={<RecentActivitySkeleton />}>
-        <RecentActivity />
+        <RecentActivity timeRange={timeRange} />
       </Suspense>
     </div>
   );

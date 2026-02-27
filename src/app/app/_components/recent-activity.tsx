@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import { getSession } from '@/lib/auth/session';
 import { getRecentActivity } from '@/lib/dashboard/dashboard-data';
+import { type TimeRange } from '@/lib/time-range/time-range';
 import { sleep } from '@/lib/utils/sleep';
 
 const verbLabel: Record<string, string> = {
@@ -19,12 +20,12 @@ const verbLabel: Record<string, string> = {
   joined:           'joined',
 };
 
-export async function RecentActivity() {
+export async function RecentActivity({ timeRange }: { timeRange: TimeRange }) {
   await sleep(1500);
 
   const session = await getSession();
   const workspaceId = session?.workspaceId ?? 'default';
-  const items = await getRecentActivity(workspaceId);
+  const items = await getRecentActivity({ workspaceId, timeRange });
 
   return (
     <Card>

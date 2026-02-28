@@ -106,6 +106,7 @@ function ToastItem({
 }) {
   return (
     <div
+      role="status"
       className={`pointer-events-auto flex items-start gap-2.5 rounded-lg border px-3.5 py-3 text-sm shadow-sm ${ITEM_CLASS[toast.type]}`}
     >
       <span className="mt-0.5 shrink-0 font-bold" aria-hidden>

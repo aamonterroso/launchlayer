@@ -4,6 +4,7 @@ import {
   useActionState,
   useCallback,
   useEffect,
+  useRef,
   useState,
   useTransition,
 } from 'react';
@@ -36,6 +37,7 @@ import {
   removeMember,
   type InviteMemberResult,
 } from '../actions';
+import { useToast } from '@/components/ui/toast';
 
 function getRoleBadgeClass(role: MemberRole): string {
   if (role === 'Owner')
@@ -51,6 +53,8 @@ interface MembersClientProps {
 }
 
 export function MembersClient({ members, canManage }: MembersClientProps) {
+  const { toast } = useToast();
+
   // ---------- Invite ----------
   const [inviteState, inviteAction, invitePending] = useActionState<
     InviteMemberResult | null,
@@ -58,23 +62,32 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
   >(inviteMember, null);
 
   const [formKey, setFormKey] = useState(0);
+  // Guard against double-firing in Strict Mode or re-renders with the same state object
+  const lastInviteStateRef = useRef<InviteMemberResult | null>(null);
   useEffect(() => {
-    if (inviteState && !inviteState.error && !inviteState.fieldErrors) {
+    if (!inviteState || inviteState === lastInviteStateRef.current) return;
+    lastInviteStateRef.current = inviteState;
+    if (!inviteState.error && !inviteState.fieldErrors) {
       setFormKey((k) => k + 1);
+      toast('success', 'Invitation sent.');
+    } else if (inviteState.error) {
+      toast('error', inviteState.error);
     }
   }, [inviteState]);
 
   // ---------- Remove ----------
   const [isRemoving, startRemoveTransition] = useTransition();
   const [removingId, setRemovingId] = useState<string | null>(null);
-  const [removeError, setRemoveError] = useState<string | null>(null);
 
   const handleRemove = useCallback((memberId: string) => {
     setRemovingId(memberId);
-    setRemoveError(null);
     startRemoveTransition(async () => {
       const result = await removeMember(memberId);
-      if (result.error) setRemoveError(result.error);
+      if (result.error) {
+        toast('error', result.error);
+      } else {
+        toast('success', 'Member removed.');
+      }
       setRemovingId(null);
     });
   }, []);
@@ -85,7 +98,6 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
 
   const [isChangingRole, startRoleTransition] = useTransition();
   const [changingRoleId, setChangingRoleId] = useState<string | null>(null);
-  const [roleChangeError, setRoleChangeError] = useState<string | null>(null);
 
   const startEditing = useCallback((member: WorkspaceMember) => {
     setEditingMemberId(member.id);
@@ -94,18 +106,17 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
 
   const cancelEditing = useCallback(() => {
     setEditingMemberId(null);
-    setRoleChangeError(null);
   }, []);
 
   const handleSaveRole = useCallback((memberId: string, role: MemberRole) => {
     setChangingRoleId(memberId);
-    setRoleChangeError(null);
     startRoleTransition(async () => {
       const result = await changeMemberRole(memberId, role);
       if (result.error) {
-        setRoleChangeError(result.error);
+        toast('error', result.error);
       } else {
         setEditingMemberId(null);
+        toast('success', 'Role updated.');
       }
       setChangingRoleId(null);
     });
@@ -174,12 +185,6 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
                   {invitePending ? 'Inviting…' : 'Invite'}
                 </Button>
               </div>
-
-              {inviteState?.error && (
-                <p className="text-destructive mt-3 text-sm">
-                  {inviteState.error}
-                </p>
-              )}
             </form>
           </CardContent>
         </Card>
@@ -228,7 +233,11 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
                     </div>
 
                     {/* Right side */}
-                    {isEditing ? (
+                    {isPendingRemove ? (
+                      <span className="text-muted-foreground shrink-0 text-xs">
+                        Removing…
+                      </span>
+                    ) : isEditing ? (
                       /* Inline role editor */
                       <div className="flex shrink-0 items-center gap-2">
                         <Select
@@ -310,13 +319,6 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
                 );
               })}
             </ul>
-          )}
-
-          {roleChangeError && (
-            <p className="text-destructive mt-3 text-sm">{roleChangeError}</p>
-          )}
-          {removeError && (
-            <p className="text-destructive mt-2 text-sm">{removeError}</p>
           )}
         </CardContent>
       </Card>

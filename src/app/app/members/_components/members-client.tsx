@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  startTransition,
   useActionState,
   useCallback,
   useEffect,
@@ -68,12 +69,12 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
     if (!inviteState || inviteState === lastInviteStateRef.current) return;
     lastInviteStateRef.current = inviteState;
     if (!inviteState.error && !inviteState.fieldErrors) {
-      setFormKey((k) => k + 1);
+      startTransition(() => setFormKey((k) => k + 1));
       toast('success', 'Invitation sent.');
     } else if (inviteState.error) {
       toast('error', inviteState.error);
     }
-  }, [inviteState]);
+  }, [inviteState, toast]);
 
   // ---------- Remove ----------
   const [isRemoving, startRemoveTransition] = useTransition();
@@ -90,7 +91,7 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
       }
       setRemovingId(null);
     });
-  }, []);
+  }, [toast]);
 
   // ---------- Inline role edit ----------
   const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
@@ -120,7 +121,7 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
       }
       setChangingRoleId(null);
     });
-  }, []);
+  }, [toast]);
 
   return (
     <div className="space-y-6">

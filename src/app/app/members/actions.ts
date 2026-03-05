@@ -13,6 +13,8 @@ import {
   updateMemberRole,
 } from '@/lib/members/members-data';
 import { MEMBER_ROLES } from '@/lib/members/member-roles';
+import { simulateOperation } from '@/lib/utils/failure-simulation';
+import { DEFAULT_ACTION_ERROR } from '@/lib/utils/action-errors';
 
 // ---------- Validation ----------
 
@@ -69,9 +71,16 @@ export async function inviteMember(
     status: 'invited',
   };
 
-  await addMember(workspaceId, newMember);
-  revalidatePath('/app/members');
+  try {
+    await simulateOperation('inviteMember');
+    await addMember(workspaceId, newMember);
+  } catch (err) {
+    if (process.env.NODE_ENV === 'development')
+      console.error('[members/actions] inviteMember failed', err);
+    return { error: DEFAULT_ACTION_ERROR };
+  }
 
+  revalidatePath('/app/members');
   return {};
 }
 
@@ -94,9 +103,16 @@ export async function removeMember(
     if (ownerCount <= 1) return { error: 'Cannot remove the last owner' };
   }
 
-  await removeMemberById(workspaceId, memberId);
-  revalidatePath('/app/members');
+  try {
+    await simulateOperation('removeMember');
+    await removeMemberById(workspaceId, memberId);
+  } catch (err) {
+    if (process.env.NODE_ENV === 'development')
+      console.error('[members/actions] removeMember failed', err);
+    return { error: DEFAULT_ACTION_ERROR };
+  }
 
+  revalidatePath('/app/members');
   return {};
 }
 
@@ -121,8 +137,15 @@ export async function changeMemberRole(
       return { error: 'Cannot change role of the last owner' };
   }
 
-  await updateMemberRole(workspaceId, memberId, role);
-  revalidatePath('/app/members');
+  try {
+    await simulateOperation('changeMemberRole');
+    await updateMemberRole(workspaceId, memberId, role);
+  } catch (err) {
+    if (process.env.NODE_ENV === 'development')
+      console.error('[members/actions] changeMemberRole failed', err);
+    return { error: DEFAULT_ACTION_ERROR };
+  }
 
+  revalidatePath('/app/members');
   return {};
 }

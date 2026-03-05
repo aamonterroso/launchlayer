@@ -62,8 +62,6 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
   >(inviteMember, null);
 
   const [formKey, setFormKey] = useState(0);
-  // Captures the submitted email so the success toast can reference it
-  const pendingEmailRef = useRef('');
   // Guard against double-firing in Strict Mode or re-renders with the same state object
   const lastInviteStateRef = useRef<InviteMemberResult | null>(null);
   useEffect(() => {
@@ -71,7 +69,7 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
     lastInviteStateRef.current = inviteState;
     if (!inviteState.error && !inviteState.fieldErrors) {
       setFormKey((k) => k + 1);
-      toast('success', `Invite sent to ${pendingEmailRef.current || 'member'}.`);
+      toast('success', 'Invitation sent.');
     } else if (inviteState.error) {
       toast('error', inviteState.error);
     }
@@ -81,14 +79,14 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
   const [isRemoving, startRemoveTransition] = useTransition();
   const [removingId, setRemovingId] = useState<string | null>(null);
 
-  const handleRemove = useCallback((memberId: string, memberName: string) => {
+  const handleRemove = useCallback((memberId: string) => {
     setRemovingId(memberId);
     startRemoveTransition(async () => {
       const result = await removeMember(memberId);
       if (result.error) {
         toast('error', result.error);
       } else {
-        toast('success', `Removed ${memberName}.`);
+        toast('success', 'Member removed.');
       }
       setRemovingId(null);
     });
@@ -110,7 +108,7 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
     setEditingMemberId(null);
   }, []);
 
-  const handleSaveRole = useCallback((memberId: string, memberName: string, role: MemberRole) => {
+  const handleSaveRole = useCallback((memberId: string, role: MemberRole) => {
     setChangingRoleId(memberId);
     startRoleTransition(async () => {
       const result = await changeMemberRole(memberId, role);
@@ -118,7 +116,7 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
         toast('error', result.error);
       } else {
         setEditingMemberId(null);
-        toast('success', `Updated ${memberName} to ${role}.`);
+        toast('success', 'Role updated.');
       }
       setChangingRoleId(null);
     });
@@ -133,15 +131,7 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
             <CardTitle>Invite Member</CardTitle>
           </CardHeader>
           <CardContent>
-            <form
-              key={formKey}
-              action={inviteAction}
-              onSubmit={(e) => {
-                pendingEmailRef.current = String(
-                  new FormData(e.currentTarget).get('email') ?? '',
-                ).trim();
-              }}
-            >
+            <form key={formKey} action={inviteAction}>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
                 <div className="flex-1 sm:max-w-md">
                   <Label htmlFor="invite-email">Email</Label>
@@ -271,7 +261,7 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
                         </Select>
                         <Button
                           size="xs"
-                          onClick={() => handleSaveRole(member.id, member.name, editingRole)}
+                          onClick={() => handleSaveRole(member.id, editingRole)}
                           disabled={isSavingRole}
                         >
                           {isSavingRole ? 'Saving…' : 'Save'}
@@ -316,7 +306,7 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
                                 variant="destructive"
-                                onSelect={() => handleRemove(member.id, member.name)}
+                                onSelect={() => handleRemove(member.id)}
                               >
                                 Remove member
                               </DropdownMenuItem>

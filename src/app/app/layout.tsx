@@ -4,6 +4,7 @@ import { Sidebar } from '@/components/app-shell/sidebar';
 import { Topbar } from '@/components/app-shell/topbar';
 import { getAuthzContext, hasPermission } from '@/lib/rbac/authorize';
 import { appNavItems } from '@/lib/navigation';
+import { Toaster } from '@/components/ui/toast';
 
 export default async function AppLayout({
   children,
@@ -27,7 +28,10 @@ export default async function AppLayout({
       />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar title={<PageTitle />} />
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto p-6">
+          {children}
+          <Toaster />
+        </main>
       </div>
     </div>
   );

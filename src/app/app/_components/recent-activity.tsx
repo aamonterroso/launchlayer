@@ -37,7 +37,7 @@ export async function RecentActivity({ timeRange }: { timeRange: TimeRange }) {
         {items.length === 0 ? (
           <p className="text-muted-foreground text-sm">No activity yet.</p>
         ) : (
-          <ul className="divide-y">
+          <ul className="divide-y divide-border">
             {items.map((item) => (
               <li key={item.id} className="flex items-center justify-between py-3">
                 <span className="text-sm">

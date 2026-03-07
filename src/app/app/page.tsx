@@ -56,7 +56,7 @@ export default async function DashboardPage({
   ];
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
@@ -66,12 +66,12 @@ export default async function DashboardPage({
           <TimeRangeTabs activePreset={timeRange.preset} />
         </Suspense>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader className="pb-2">
+          <Card key={stat.title} className="gap-4">
+            <CardHeader>
               <CardDescription>{stat.title}</CardDescription>
-              <CardTitle className="text-3xl">{stat.value}</CardTitle>
+              <CardTitle className="text-2xl">{stat.value}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground text-xs">{stat.change}</p>

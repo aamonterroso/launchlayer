@@ -45,7 +45,7 @@ function getRoleBadgeClass(role: MemberRole): string {
     return 'border border-amber-200 bg-amber-50/60 text-amber-800';
   if (role === 'Admin')
     return 'border border-violet-200 bg-violet-50/60 text-violet-800';
-  return '';
+  return 'border border-border/70 text-foreground/60';
 }
 
 interface MembersClientProps {
@@ -200,7 +200,7 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
           {members.length === 0 ? (
             <p className="text-muted-foreground text-sm">No members yet.</p>
           ) : (
-            <ul className="divide-y">
+            <ul className="divide-y divide-border">
               {members.map((member) => {
                 const isPendingRemove = isRemoving && removingId === member.id;
                 const isEditing = editingMemberId === member.id;
@@ -210,7 +210,7 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
                 return (
                   <li
                     key={member.id}
-                    className={`flex items-center gap-3 py-3 transition-opacity ${isPendingRemove ? 'opacity-50' : ''}`}
+                    className={`flex items-center gap-4 py-3 transition-opacity ${isPendingRemove ? 'opacity-50' : ''}`}
                   >
                     {/* Avatar */}
                     <Avatar initials={getInitials(member.name, member.email)} />
@@ -220,17 +220,19 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
                       <p className="truncate text-sm font-medium">
                         {member.name}
                       </p>
-                      <p className="text-muted-foreground truncate text-xs">
-                        {member.email}
-                      </p>
-                      <Badge
-                        variant={
-                          member.status === 'active' ? 'success' : 'warning'
-                        }
-                        className="mt-1"
-                      >
-                        {member.status === 'active' ? 'Active' : 'Invited'}
-                      </Badge>
+                      <div className="flex min-w-0 items-center gap-1.5">
+                        <p className="text-muted-foreground truncate text-xs">
+                          {member.email}
+                        </p>
+                        <Badge
+                          variant={
+                            member.status === 'active' ? 'success' : 'warning'
+                          }
+                          className="shrink-0"
+                        >
+                          {member.status === 'active' ? 'Active' : 'Invited'}
+                        </Badge>
+                      </div>
                     </div>
 
                     {/* Right side */}

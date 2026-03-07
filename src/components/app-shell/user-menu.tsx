@@ -30,7 +30,7 @@ export function UserMenu({ user }: UserMenuProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="bg-muted text-muted-foreground flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium hover:ring-2 hover:ring-offset-2"
+          className="bg-muted text-muted-foreground flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium hover:ring-2 hover:ring-border hover:ring-offset-2"
           aria-label="User menu"
         >
           {getInitials(user.name)}

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 export function UsageGraphSkeleton() {
   return (
     <Card>
-      <CardHeader className="flex flex-row items-start justify-between pb-4">
+      <CardHeader className="flex flex-row items-start justify-between">
         <div className="space-y-2">
           <div className="bg-muted-foreground/15 h-5 w-24 animate-pulse rounded" />
           <div className="bg-muted-foreground/15 h-4 w-52 animate-pulse rounded" />

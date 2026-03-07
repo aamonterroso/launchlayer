@@ -11,9 +11,9 @@ import { guardPage } from '@/lib/rbac/route-guards';
 
 function SettingRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between border-b py-3 last:border-0">
+    <div className="flex items-center justify-between border-b py-3.5 last:border-0">
       <span className="text-muted-foreground text-sm">{label}</span>
-      <span className="text-sm font-medium">{value}</span>
+      <span className="text-sm font-semibold">{value}</span>
     </div>
   );
 }

@@ -37,7 +37,7 @@ export async function UsageGraph({ timeRange }: { timeRange: TimeRange }) {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-start justify-between pb-4">
+      <CardHeader className="flex flex-row items-start justify-between">
         <div>
           <CardTitle>Usage</CardTitle>
           <CardDescription>{description}</CardDescription>

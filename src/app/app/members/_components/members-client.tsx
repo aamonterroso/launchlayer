@@ -45,8 +45,10 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
     if (!inviteState || inviteState === lastInviteStateRef.current) return;
     lastInviteStateRef.current = inviteState;
     if (!inviteState.error && !inviteState.fieldErrors) {
-      startTransition(() => setFormKey((k) => k + 1));
-      setShowInviteForm(false);
+      startTransition(() => {
+        setFormKey((k) => k + 1);
+        setShowInviteForm(false);
+      });
       toast('success', 'Invitation sent.');
     } else if (inviteState.error) {
       toast('error', inviteState.error);

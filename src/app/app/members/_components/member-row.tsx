@@ -49,6 +49,8 @@ export function MemberRow({
   onSaveRole,
   onEditingRoleChange,
 }: MemberRowProps) {
+  const hasName = member.name.trim() !== '';
+
   return (
     <li
       className={`flex items-center gap-4 py-3 transition-opacity ${isPendingRemove ? 'opacity-50' : ''}`}
@@ -58,9 +60,11 @@ export function MemberRow({
 
       {/* Identity */}
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium">{member.name}</p>
+        <p className="truncate text-sm font-medium">{hasName ? member.name : member.email}</p>
         <div className="flex min-w-0 items-center gap-1.5">
-          <p className="text-muted-foreground truncate text-xs">{member.email}</p>
+          <p className="text-muted-foreground truncate text-xs">
+            {hasName ? member.email : 'Pending invitation'}
+          </p>
           <Badge
             variant={member.status === 'active' ? 'success' : 'warning'}
             className="shrink-0"
@@ -75,7 +79,7 @@ export function MemberRow({
         <span className="text-muted-foreground shrink-0 text-xs">Removing…</span>
       ) : isEditing ? (
         <MemberRoleEditor
-          memberName={member.name}
+          memberName={hasName ? member.name : member.email}
           role={editingRole}
           isSaving={isSavingRole}
           onRoleChange={onEditingRoleChange}
@@ -95,7 +99,7 @@ export function MemberRow({
                   variant="ghost"
                   size="icon-sm"
                   disabled={isPendingRemove}
-                  aria-label={`Actions for ${member.name}`}
+                  aria-label={`Actions for ${hasName ? member.name : member.email}`}
                 >
                   <EllipsisIcon />
                 </Button>

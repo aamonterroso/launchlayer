@@ -65,7 +65,7 @@ export async function inviteMember(
   // Assumes Node.js runtime (not Edge). crypto.randomUUID() available in Node 18+.
   const newMember: WorkspaceMember = {
     id: `m_${crypto.randomUUID()}`,
-    name: parsed.data.email.split('@')[0] ?? parsed.data.email,
+    name: '',
     email: parsed.data.email,
     role: parsed.data.role,
     status: 'invited',

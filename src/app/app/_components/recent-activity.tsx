@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Avatar, getInitials } from '@/components/ui/avatar';
 import { getSession } from '@/lib/auth/session';
 import { getRecentActivity } from '@/lib/dashboard/dashboard-data';
 import { type TimeRange } from '@/lib/time-range/time-range';
@@ -39,8 +40,9 @@ export async function RecentActivity({ timeRange }: { timeRange: TimeRange }) {
         ) : (
           <ul className="divide-y divide-border">
             {items.map((item) => (
-              <li key={item.id} className="flex items-center justify-between py-3">
-                <span className="text-sm">
+              <li key={item.id} className="flex items-center gap-3 py-3">
+                <Avatar initials={getInitials(item.actor)} />
+                <span className="min-w-0 flex-1 text-sm">
                   <span className="font-medium">{item.actor}</span>
                   {' '}{verbLabel[item.verb] ?? item.verb}{' '}
                   <span className="text-muted-foreground">{item.target}</span>

@@ -7,6 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { BarChart2 } from 'lucide-react';
+
 import { getSession } from '@/lib/auth/session';
 import { getUsageSeries } from '@/lib/dashboard/dashboard-data';
 import { type TimeRange } from '@/lib/time-range/time-range';
@@ -39,7 +41,10 @@ export async function UsageGraph({ timeRange }: { timeRange: TimeRange }) {
     <Card>
       <CardHeader className="flex flex-row items-start justify-between">
         <div>
-          <CardTitle>Usage</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart2 className="h-4 w-4 text-muted-foreground" />
+            Usage
+          </CardTitle>
           <CardDescription>{description}</CardDescription>
         </div>
         {points.length > 0 && (
@@ -70,7 +75,7 @@ export async function UsageGraph({ timeRange }: { timeRange: TimeRange }) {
                   </span>
                   <div className="bg-muted flex-1 overflow-hidden rounded-full">
                     <div
-                      className="bg-primary/60 h-2 rounded-full"
+                      className="bg-primary/80 h-2 rounded-full"
                       style={{ width: `${barWidth}%` }}
                     />
                   </div>

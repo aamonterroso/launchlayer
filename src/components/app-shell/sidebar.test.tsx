@@ -100,7 +100,7 @@ describe('Sidebar', () => {
     });
     const dashboardLink = screen.getByText('Dashboard').closest('a');
     expect(dashboardLink?.className).toContain('bg-muted');
-    expect(dashboardLink?.className).toContain('font-medium');
+    expect(dashboardLink?.className).toContain('font-semibold');
 
     const membersLink = screen.getByText('Members').closest('a');
     expect(membersLink?.className).toContain('text-muted-foreground');

@@ -9,14 +9,5 @@ export default async function MembersPage() {
 
   const members = await getMembers({ workspaceId });
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Members</h1>
-        <p className="text-muted-foreground">Manage your workspace members.</p>
-      </div>
-
-      <MembersClient members={members} canManage={canManage} />
-    </div>
-  );
+  return <MembersClient members={members} canManage={canManage} />;
 }

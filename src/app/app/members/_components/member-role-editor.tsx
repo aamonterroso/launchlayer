@@ -49,7 +49,7 @@ export function MemberRoleEditor({
           ))}
         </SelectContent>
       </Select>
-      <Button size="xs" onClick={onSave} disabled={isSaving}>
+      <Button size="xs" onClick={onSave} disabled={isSaving} className="bg-cta hover:bg-[#2468c5] text-white">
         {isSaving ? 'Saving…' : 'Save'}
       </Button>
       <Button size="xs" variant="ghost" onClick={onCancel} disabled={isSaving}>

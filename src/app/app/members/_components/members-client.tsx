@@ -16,7 +16,9 @@ import {
   removeMember,
   type InviteMemberResult,
 } from '../actions';
+import { PlusIcon } from 'lucide-react';
 import { useToast } from '@/components/ui/toast';
+import { Button } from '@/components/ui/button';
 import { InviteMemberForm } from './invite-member-form';
 import { MembersList } from './members-list';
 
@@ -29,6 +31,8 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
   const { toast } = useToast();
 
   // ---------- Invite ----------
+  const [showInviteForm, setShowInviteForm] = useState(false);
+
   const [inviteState, inviteAction, invitePending] = useActionState<
     InviteMemberResult | null,
     FormData
@@ -42,6 +46,7 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
     lastInviteStateRef.current = inviteState;
     if (!inviteState.error && !inviteState.fieldErrors) {
       startTransition(() => setFormKey((k) => k + 1));
+      setShowInviteForm(false);
       toast('success', 'Invitation sent.');
     } else if (inviteState.error) {
       toast('error', inviteState.error);
@@ -103,12 +108,29 @@ export function MembersClient({ members, canManage }: MembersClientProps) {
 
   return (
     <div className="space-y-6">
-      {canManage && (
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Members</h1>
+          <p className="text-muted-foreground">Manage your workspace members.</p>
+        </div>
+        {canManage && !showInviteForm && (
+          <Button
+            onClick={() => setShowInviteForm(true)}
+            className="h-10 gap-2 rounded-lg px-4 bg-cta hover:bg-[#2468c5] text-white font-medium"
+          >
+            <PlusIcon />
+            Invite Member
+          </Button>
+        )}
+      </div>
+
+      {canManage && showInviteForm && (
         <InviteMemberForm
           formKey={formKey}
           action={inviteAction}
           pending={invitePending}
           fieldErrors={inviteState?.fieldErrors}
+          onCancel={() => setShowInviteForm(false)}
         />
       )}
 

@@ -18,6 +18,7 @@ interface InviteMemberFormProps {
   action: (payload: FormData) => void;
   pending: boolean;
   fieldErrors?: { email?: string[]; role?: string[] };
+  onCancel?: () => void;
 }
 
 export function InviteMemberForm({
@@ -25,6 +26,7 @@ export function InviteMemberForm({
   action,
   pending,
   fieldErrors,
+  onCancel,
 }: InviteMemberFormProps) {
   return (
     <Card>
@@ -74,9 +76,21 @@ export function InviteMemberForm({
               </p>
             </div>
 
-            <Button type="submit" disabled={pending} className="shrink-0 sm:mt-4.5">
+            <Button type="submit" disabled={pending} className="shrink-0 sm:mt-4.5 bg-cta hover:bg-[#2468c5] text-white">
               {pending ? 'Inviting…' : 'Invite'}
             </Button>
+
+            {onCancel && (
+              <Button
+                type="button"
+                variant="ghost"
+                disabled={pending}
+                onClick={onCancel}
+                className="shrink-0 sm:mt-4.5"
+              >
+                Cancel
+              </Button>
+            )}
           </div>
         </form>
       </CardContent>
